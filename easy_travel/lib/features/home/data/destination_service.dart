@@ -8,8 +8,10 @@ class DestinationService {
   final String _baseUrl =
       "https://destinationapp-h4e8dvace3fqffbb.eastus-01.azurewebsites.net/api/destinations";
 
-  Future<List<Destination>> getDestinations() async {
-    final response = await http.get(Uri.parse(_baseUrl));
+  Future<List<Destination>> getDestinations(String category) async {
+
+    final String query = category == 'All' ? '': category;
+    final response = await http.get(Uri.parse('$_baseUrl?type=$query'));
 
     if (response.statusCode == HttpStatus.ok) {
       final List maps = jsonDecode(response.body)['results'];
