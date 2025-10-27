@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class DestinationsBloc extends Bloc<DestinationsEvent, DestinationsState> {
   DestinationsBloc() : super(DestinationsInitialState()) {
     on<GetDestinationsByCategory>((event, emit) async {
+     
       emit(DestinationsLoadingState());
       List<Destination> destinations = await DestinationService()
           .getDestinations(event.category);
