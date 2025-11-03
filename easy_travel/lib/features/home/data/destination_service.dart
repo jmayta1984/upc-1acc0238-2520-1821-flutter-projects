@@ -1,23 +1,46 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:easy_travel/core/constants/api_constants.dart';
+import 'package:easy_travel/features/home/domain/category.dart';
 import 'package:easy_travel/features/home/domain/destination.dart';
 import 'package:http/http.dart' as http;
 
 class DestinationService {
-  final String _baseUrl =
-      "https://destinationapp-h4e8dvace3fqffbb.eastus-01.azurewebsites.net/api/destinations";
-
   Future<List<Destination>> getDestinations(String category) async {
+    try {
+      final Uri uri = Uri.parse(ApiConstants.baseUrl).replace(
+        path: ApiConstants.destinationsEndpoint,
+        queryParameters: category != CategoryType.all.label
+            ? {'type': category}
+            : null,
+      );
+      final response = await http.get(uri);
 
-    final String query = category == 'All' ? '': category;
-    final response = await http.get(Uri.parse('$_baseUrl?type=$query'));
+      if (response.statusCode == HttpStatus.ok) {
+        final List maps = jsonDecode(response.body)['results'];
+        return maps.map((json) => Destination.fromJson(json)).toList();
+      }
 
-    if (response.statusCode == HttpStatus.ok) {
-      final List maps = jsonDecode(response.body)['results'];
-      return maps.map((json) => Destination.fromJson(json)).toList();
+      if (response.statusCode == HttpStatus.notFound) {
+        throw HttpException('No destinations found (404)');
+      }
+
+      if (response.statusCode >= 500) {
+        throw HttpException('Server error ${response.statusCode}');
+      }
+
+      throw HttpException(
+        'Unexpected HTTP Status: ${response.statusCode} - ${response.reasonPhrase}',
+      );
+    } on SocketException {
+      throw const SocketException('Failed to stablish a network connection');
+    } on FormatException catch (e) {
+      throw FormatException('Failed to parse response: ${e.message}');
+    } catch (e) {
+      throw Exception(
+        'Unexpect error while fetching destinations: ${e.toString()}',
+      );
     }
-
-    return [];
   }
 }

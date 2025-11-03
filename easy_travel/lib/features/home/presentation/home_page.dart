@@ -1,75 +1,59 @@
+import 'package:easy_travel/features/home/domain/category.dart';
 import 'package:easy_travel/features/home/domain/destination.dart';
-import 'package:easy_travel/features/home/presentation/blocs/destinations_bloc.dart';
-import 'package:easy_travel/features/home/presentation/blocs/destinations_event.dart';
-import 'package:easy_travel/features/home/presentation/blocs/destinations_state.dart';
+import 'package:easy_travel/features/home/presentation/blocs/home_bloc.dart';
+import 'package:easy_travel/features/home/presentation/blocs/home_event.dart';
+import 'package:easy_travel/features/home/presentation/blocs/home_state.dart';
 import 'package:easy_travel/features/home/presentation/destination_card.dart';
 import 'package:easy_travel/features/home/presentation/destination_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final List<String> _categories = [
-    'All',
-    'Beach',
-    'Adventure',
-    'Cultural',
-    'City',
-  ];
-
-  String _selectedCategory = 'All';
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<DestinationsBloc>().add(
-      GetDestinationsByCategory(category: _selectedCategory),
-    );
-  }
+  final List<CategoryType> _categories = CategoryType.values;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
-          height: 48,
-          child: ListView.separated(
-            separatorBuilder: (context, index) => SizedBox(width: 8),
-            scrollDirection: Axis.horizontal,
-            itemCount: _categories.length,
-            itemBuilder: (context, index) {
-              String category = _categories[index];
-              return FilterChip(
-                label: Text(category),
-                onSelected: (value) {
-                  setState(() {
-                    _selectedCategory = category;
-                    context.read<DestinationsBloc>().add(
-                      GetDestinationsByCategory(category: _selectedCategory),
-                    );
-                  });
-                },
-                selected: category == _selectedCategory,
-              );
-            },
+        BlocSelector<HomeBloc, HomeState, String>(
+          selector: (state) => state.selectedCategory,
+          builder:(context, state) => SizedBox(
+            height: 48,
+            child: ListView.separated(
+              separatorBuilder: (context, index) => SizedBox(width: 8),
+              scrollDirection: Axis.horizontal,
+              itemCount: _categories.length,
+              itemBuilder: (context, index) {
+                String category = _categories[index].label;
+                return FilterChip(
+                  label: Text(category),
+                  onSelected: (value) {
+                    context.read<HomeBloc>().add(GetDestinationsByCategory(category: category));
+                  },
+                  selected: category == state,
+                );
+              },
+            ),
           ),
         ),
         Expanded(
-          child: BlocBuilder<DestinationsBloc, DestinationsState>(
-            builder: (context, state) {
-              if (state is DestinationsLoadingState) {
-                return Center(child: CircularProgressIndicator());
-              } else if (state is DestinationsSuccessState) {
+          child: BlocSelector<HomeBloc, HomeState, (Status, List<Destination>, String?)>(
+            selector:(state) => (state.status, state.destinations, state.message),
+             builder:(context, state) {
+               final (status, destinations, message) = state;
+
+               switch(status){
+                case Status.loading:
+                return const Center(child: CircularProgressIndicator());
+                case Status.failure:
+                return  Center(child: Text(message ?? '',)); 
+                case Status.success:
                 return ListView.builder(
-                  itemCount: state.destinations.length,
+                  itemCount: destinations.length,
                   itemBuilder: (context, index) {
-                    Destination destination = state.destinations[index];
+                    Destination destination = destinations[index];
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -84,12 +68,11 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                 );
-              } else {
-                return const Center();
-              }
-            },
+                default:
+                  return SizedBox.shrink();
+               }
+             },),
           ),
-        ),
       ],
     );
   }
