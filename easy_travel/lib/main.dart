@@ -1,3 +1,4 @@
+import 'package:easy_travel/features/auth/presentation/blocs/auth_bloc.dart';
 import 'package:easy_travel/features/auth/presentation/login_page.dart';
 import 'package:easy_travel/core/ui/theme.dart';
 import 'package:easy_travel/features/home/presentation/blocs/destinations_bloc.dart';
@@ -14,8 +15,15 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     MaterialTheme theme = MaterialTheme(TextTheme());
-    return  BlocProvider(
-      create: (context) => DestinationsBloc(),
+    return  MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => DestinationsBloc(),
+        ),
+         BlocProvider(
+          create: (context) => AuthBloc(),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: theme.light(),

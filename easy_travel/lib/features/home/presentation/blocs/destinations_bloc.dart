@@ -11,7 +11,7 @@ class DestinationsBloc extends Bloc<DestinationsEvent, DestinationsState> {
       emit(DestinationsLoadingState());
       List<Destination> destinations = await DestinationService()
           .getDestinations(event.category);
-      emit(DestinationsSuccesState(destinations: destinations));
+      emit(DestinationsSuccessState(destinations: destinations));
     });
   }
 }

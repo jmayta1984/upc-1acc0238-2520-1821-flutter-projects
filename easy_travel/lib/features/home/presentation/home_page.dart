@@ -39,7 +39,8 @@ class _HomePageState extends State<HomePage> {
       children: [
         SizedBox(
           height: 48,
-          child: ListView.builder(
+          child: ListView.separated(
+            separatorBuilder: (context, index) => SizedBox(width: 8),
             scrollDirection: Axis.horizontal,
             itemCount: _categories.length,
             itemBuilder: (context, index) {
@@ -64,7 +65,7 @@ class _HomePageState extends State<HomePage> {
             builder: (context, state) {
               if (state is DestinationsLoadingState) {
                 return Center(child: CircularProgressIndicator());
-              } else if (state is DestinationsSuccesState) {
+              } else if (state is DestinationsSuccessState) {
                 return ListView.builder(
                   itemCount: state.destinations.length,
                   itemBuilder: (context, index) {

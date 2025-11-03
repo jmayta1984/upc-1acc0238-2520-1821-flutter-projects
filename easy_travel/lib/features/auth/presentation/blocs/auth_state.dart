@@ -7,9 +7,9 @@ class AuthInitialState extends AuthState {}
 
 class AuthLoadingState extends AuthState {}
 
-class AuthSuccesState extends AuthState {
+class AuthSuccessState extends AuthState {
   final User user;
-  AuthSuccesState({required this.user});
+  AuthSuccessState({required this.user});
 }
 
 

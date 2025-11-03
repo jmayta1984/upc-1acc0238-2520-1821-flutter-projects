@@ -6,9 +6,9 @@ class DestinationsInitialState extends DestinationsState {}
 
 class DestinationsLoadingState extends DestinationsState {}
 
-class DestinationsSuccesState extends DestinationsState {
+class DestinationsSuccessState extends DestinationsState {
   final List<Destination> destinations;
-  DestinationsSuccesState({required this.destinations});
+  DestinationsSuccessState({required this.destinations});
 }
 
 class DestinationsFailureState extends DestinationsState {
