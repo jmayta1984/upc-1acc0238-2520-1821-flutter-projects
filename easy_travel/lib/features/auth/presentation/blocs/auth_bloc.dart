@@ -9,7 +9,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginEvent>((event, emit) async {
       emit(AuthLoadingState());
       try {
-        User user = await AuthService().signIn(event.email, event.password);
+        User user = await AuthService().login(event.email, event.password);
         emit(AuthSuccessState(user: user));
       } catch (e) {
         emit(AuthFailureState(message: e.toString()));

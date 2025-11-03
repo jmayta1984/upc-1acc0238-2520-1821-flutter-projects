@@ -1,18 +1,18 @@
 import 'dart:io';
 
+import 'package:easy_travel/core/constants/api_constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:easy_travel/features/auth/domain/user.dart';
 
 class AuthService {
-  final String _baseUrl =
-      "https://destinationapp-h4e8dvace3fqffbb.eastus-01.azurewebsites.net/api/users/login";
 
-  Future<User> signIn(String email, String password) async {
-
+  Future<User> login(String email, String password) async {
+    final Uri uri = Uri.parse(
+      ApiConstants.baseUrl,
+    ).replace(path: ApiConstants.loginEndpoint);
     final response = await http.post(
-      Uri.parse(_baseUrl),
-
+      uri,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'password': password}),
     );
