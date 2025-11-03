@@ -22,6 +22,6 @@ class AuthService {
       return User.fromJson(data);
     }
 
-    return Future.error('Failed to login');
+    return Future.error('Failed to login: email: $email password: $password');
   }
 }

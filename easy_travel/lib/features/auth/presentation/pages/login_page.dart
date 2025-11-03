@@ -1,42 +1,28 @@
-import 'package:easy_travel/features/auth/presentation/blocs/auth_bloc.dart';
-import 'package:easy_travel/features/auth/presentation/blocs/auth_event.dart';
-import 'package:easy_travel/features/auth/presentation/blocs/auth_state.dart';
+import 'package:easy_travel/core/enums/status.dart';
+import 'package:easy_travel/features/auth/presentation/blocs/login_bloc.dart';
+import 'package:easy_travel/features/auth/presentation/blocs/login_event.dart';
+import 'package:easy_travel/features/auth/presentation/blocs/login_state.dart';
 import 'package:easy_travel/features/main/presentation/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  bool _isHidden = true;
-
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-
-@override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-  @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocListener<LoginBloc, LoginState>(
+      listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
-        if (state is AuthSuccessState) {
+        if (state.status == Status.success) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => MainPage()),
           );
-        } else if (state is AuthFailureState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+        } else if (state.status == Status.failure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message ?? '')));
         }
       },
       child: Column(
@@ -45,33 +31,47 @@ class _LoginPageState extends State<LoginPage> {
           Padding(
             padding: EdgeInsets.all(8.0),
             child: TextField(
-              controller: _emailController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Email',
               ),
               keyboardType: TextInputType.emailAddress,
+              onChanged: (value) {
+                context.read<LoginBloc>().add(OnEmailChanged(email: value));
+              },
             ),
           ),
           Padding(
             padding: EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Password',
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _isHidden = !_isHidden;
-                    });
-                  },
-                  icon: Icon(_isHidden ? Icons.visibility_off : Icons.visibility),
-                ),
-              ),
-              obscureText: _isHidden,
+            child: BlocSelector<LoginBloc, LoginState, bool>(
+              selector: (state) => state.isPasswordVisible,
+              builder: (context, isPasswordVisible) {
+                return TextField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Password',
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        context.read<LoginBloc>().add(
+                          OnTogglePasswordVisibility(),
+                        );
+                      },
+                      icon: Icon(
+                        isPasswordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                    ),
+                  ),
+                  obscureText: !isPasswordVisible,
+                    onChanged: (value) {
+                context.read<LoginBloc>().add(OnPasswordChanged(password: value));
+              },
+                );
+              },
             ),
           ),
+
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
@@ -79,12 +79,7 @@ class _LoginPageState extends State<LoginPage> {
               width: double.infinity,
               child: FilledButton(
                 onPressed: () {
-                 context.read<AuthBloc>().add(
-                    LoginEvent(
-                      email: _emailController.text,
-                      password: _passwordController.text,
-                    ),
-                  );
+                  context.read<LoginBloc>().add(Login());
                 },
                 child: Text('Sign in'),
               ),
