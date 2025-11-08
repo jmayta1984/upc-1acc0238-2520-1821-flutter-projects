@@ -25,65 +25,83 @@ class LoginPage extends StatelessWidget {
           ).showSnackBar(SnackBar(content: Text(state.message ?? '')));
         }
       },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
         children: [
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Email',
-              ),
-              keyboardType: TextInputType.emailAddress,
-              onChanged: (value) {
-                context.read<LoginBloc>().add(OnEmailChanged(email: value));
-              },
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: BlocSelector<LoginBloc, LoginState, bool>(
-              selector: (state) => state.isPasswordVisible,
-              builder: (context, isPasswordVisible) {
-                return TextField(
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: TextField(
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: 'Password',
-                    suffixIcon: IconButton(
-                      onPressed: () {
+                    hintText: 'Email',
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  onChanged: (value) {
+                    context.read<LoginBloc>().add(OnEmailChanged(email: value));
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: BlocSelector<LoginBloc, LoginState, bool>(
+                  selector: (state) => state.isPasswordVisible,
+                  builder: (context, isPasswordVisible) {
+                    return TextField(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Password',
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            context.read<LoginBloc>().add(
+                              OnTogglePasswordVisibility(),
+                            );
+                          },
+                          icon: Icon(
+                            isPasswordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                        ),
+                      ),
+                      obscureText: !isPasswordVisible,
+                      onChanged: (value) {
                         context.read<LoginBloc>().add(
-                          OnTogglePasswordVisibility(),
+                          OnPasswordChanged(password: value),
                         );
                       },
-                      icon: Icon(
-                        isPasswordVisible
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                    ),
-                  ),
-                  obscureText: !isPasswordVisible,
-                    onChanged: (value) {
-                context.read<LoginBloc>().add(OnPasswordChanged(password: value));
-              },
-                );
-              },
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              height: 48,
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: () {
-                  context.read<LoginBloc>().add(Login());
-                },
-                child: Text('Sign in'),
+                    );
+                  },
+                ),
               ),
-            ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  height: 48,
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () {
+                      context.read<LoginBloc>().add(Login());
+                    },
+                    child: Text('Sign in'),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          BlocSelector<LoginBloc, LoginState, bool>(
+            selector: (state) => state.status == Status.loading,
+            builder: (context, isLoading) {
+              if (isLoading) {
+                return Container(
+                  color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+              return SizedBox.shrink();
+            },
           ),
         ],
       ),
