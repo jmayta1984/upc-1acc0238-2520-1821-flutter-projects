@@ -1,14 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:easy_travel/features/home/data/destination_dao.dart';
 import 'package:easy_travel/features/home/domain/destination.dart';
+import 'package:easy_travel/features/home/presentation/blocs/home_bloc.dart';
+import 'package:easy_travel/features/home/presentation/blocs/home_event.dart';
+import 'package:easy_travel/features/home/presentation/models/destination_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DestinationCard extends StatelessWidget {
-  const DestinationCard({super.key, required this.destination});
-  final Destination destination;
+  const DestinationCard({super.key, required this.destinationUi});
+  final DestinationUi destinationUi;
 
   @override
   Widget build(BuildContext context) {
+    final Destination destination = destinationUi.destination;
+    final bool isFavorite = destinationUi.isFavorite;
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,9 +42,13 @@ class DestinationCard extends StatelessWidget {
                   color: Theme.of(context).colorScheme.onPrimary,
                   child: IconButton(
                     onPressed: () {
-                      DestinationDao().insert(destination);
+                      context.read<HomeBloc>().add(
+                        ToggleFavorite(destination: destination),
+                      );
                     },
-                    icon: Icon(Icons.favorite_border),
+                    icon: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                    ),
                   ),
                 ),
               ),

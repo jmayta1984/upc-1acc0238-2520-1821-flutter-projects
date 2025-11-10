@@ -18,4 +18,14 @@ class DestinationDao {
     final List<Map<String, dynamic>> maps = await db.query('destinations');
     return maps.map((map) => Destination.fromMap(map)).toList();
   }
+
+  Future<bool> isFavorite(int id) async {
+    final Database db = await AppDatabase().database;
+    final maps = await db.query(
+      'destinations',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    return maps.isNotEmpty;
+  }
 }
