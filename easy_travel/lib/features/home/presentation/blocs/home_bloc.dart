@@ -37,6 +37,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       );
     }).toList();
     emit(state.copyWith(destinations: destinations));
+    
   }
 
   FutureOr<void> _getDestinationsByCategory(
