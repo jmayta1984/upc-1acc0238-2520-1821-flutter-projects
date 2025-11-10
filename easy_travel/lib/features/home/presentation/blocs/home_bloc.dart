@@ -23,11 +23,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) async {
     bool isFavorite = await dao.isFavorite(event.destination.id);
     if (isFavorite) {
-      dao.insert(event.destination);
-    } else {
       dao.delete(event.destination.id);
+    } else {
+      dao.insert(event.destination);
     }
-    emit(state.copyWith());
+    final List<Destination> favorites = await dao.fetchAll();
+    final List ids = favorites.map((destination) => destination.id).toList();
+
+    final List<DestinationUi> destinations = state.destinations.map((item) {
+      return DestinationUi(
+        destination: item.destination,
+        isFavorite: ids.contains(item.destination.id),
+      );
+    }).toList();
+    emit(state.copyWith(destinations: destinations));
   }
 
   FutureOr<void> _getDestinationsByCategory(
@@ -46,9 +55,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final List<Destination> destinations = await service.getDestinations(
         event.category,
       );
+      final List<Destination> favorites = await dao.fetchAll();
+      final List ids = favorites.map((destination) => destination.id).toList();
 
       List<DestinationUi> destinationsUi = destinations.map((e) {
-        return DestinationUi(destination: e, isFavorite: false);
+        return DestinationUi(destination: e, isFavorite: ids.contains(e.id));
       }).toList();
       emit(
         state.copyWith(status: Status.success, destinations: destinationsUi),

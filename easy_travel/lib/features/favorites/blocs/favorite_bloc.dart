@@ -1,16 +1,32 @@
+import 'dart:async';
+import 'package:easy_travel/core/enums/status.dart';
 import 'package:easy_travel/features/favorites/blocs/favorite_event.dart';
 import 'package:easy_travel/features/favorites/blocs/favorites_state.dart';
+import 'package:easy_travel/features/home/data/destination_dao.dart';
+import 'package:easy_travel/features/home/domain/destination.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FavoriteBloc extends Bloc<FavoriteEvent, FavoritesState> {
-  FavoriteBloc(): super(FavoritesState()){
-    on<GetAllFavorites>((event, emit) {
-      
-    },);
+  final DestinationDao dao;
+  FavoriteBloc({required this.dao}) : super(FavoritesState()) {
+    on<GetAllFavorites>(_getAllFavorites);
 
-    on<RemoveFavorite>((event, emit) {
-      
-    },);
+    on<RemoveFavorite>(_removeFavorite);
   }
-  
+
+  FutureOr<void> _getAllFavorites(
+    GetAllFavorites event,
+    Emitter<FavoritesState> emit,
+  ) async {
+    emit(state.copyWith(status: Status.loading));
+    List<Destination> destinations = await dao.fetchAll();
+    emit(state.copyWith(destinations: destinations));
+  }
+
+  FutureOr<void> _removeFavorite(
+    RemoveFavorite event,
+    Emitter<FavoritesState> emit,
+  ) {
+    dao.delete(event.id);
+  }
 }
