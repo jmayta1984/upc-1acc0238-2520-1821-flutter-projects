@@ -37,17 +37,24 @@ class DestinationCard extends StatelessWidget {
                 ),
               ),
 
-              ClipOval(
-                child: Container(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  child: IconButton(
-                    onPressed: () {
-                      context.read<HomeBloc>().add(
-                        ToggleFavorite(destination: destination),
-                      );
-                    },
-                    icon: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ClipOval(
+                  child: Container(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: IconButton(
+                        onPressed: () {
+                          context.read<HomeBloc>().add(
+                            ToggleFavorite(destination: destination),
+                          );
+                        },
+                        icon: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                        ),
+                      ),
                     ),
                   ),
                 ),

@@ -34,7 +34,7 @@ class DestinationService {
         'Unexpected HTTP Status: ${response.statusCode} - ${response.reasonPhrase}',
       );
     } on SocketException {
-      throw const SocketException('Failed to stablish a network connection');
+      throw const SocketException('Failed to establish a network connection');
     } on FormatException catch (e) {
       throw FormatException('Failed to parse response: ${e.message}');
     } catch (e) {
