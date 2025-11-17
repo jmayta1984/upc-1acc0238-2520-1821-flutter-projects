@@ -3,12 +3,16 @@ class Destination {
   final String title;
   final String posterPath;
   final String overview;
+  final String country;
+  final String city;
 
   Destination({
     required this.id,
     required this.title,
     required this.posterPath,
     required this.overview,
+    required this.country,
+    required this.city,
   });
 
   factory Destination.fromJson(Map<String, dynamic> json) {
@@ -17,6 +21,8 @@ class Destination {
       title: json['title'],
       posterPath: json['posterPath'],
       overview: json['overview'],
+      country: json['country'],
+      city: json['city'],
     );
   }
 
@@ -35,6 +41,8 @@ class Destination {
       title: map['title'],
       posterPath: map['poster_path'],
       overview: map['overview'],
+      city: map['city'] ?? '',
+      country: map['country'] ?? '',
     );
   }
 }

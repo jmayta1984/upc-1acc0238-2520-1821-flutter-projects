@@ -27,7 +27,10 @@ class AppDatabase {
        (id integer primary key,
         title text, 
         poster_path text,
-        overview text)''');
+        overview text,
+        city text,
+        country text
+        )''');
       },
     );
   }
