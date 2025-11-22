@@ -7,15 +7,13 @@ class GetReviews extends ReviewListEvent {
   const GetReviews(this.id);
 }
 
-class AddReview extends ReviewListEvent {
+class SubmitReview extends ReviewListEvent {
   final String comment;
   final int rating;
   final int id;
-  final String token;
-  const AddReview({
+  const SubmitReview({
     required this.comment,
     required this.rating,
     required this.id,
-    required this.token,
   });
 }

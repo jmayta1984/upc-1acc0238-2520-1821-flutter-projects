@@ -2,6 +2,7 @@ import 'package:easy_travel/core/enums/status.dart';
 import 'package:easy_travel/features/home/domain/review.dart';
 import 'package:easy_travel/features/home/presentation/blocs/review_list_bloc.dart';
 import 'package:easy_travel/features/home/presentation/blocs/review_list_state.dart';
+import 'package:easy_travel/features/home/presentation/widgets/review_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,8 +26,12 @@ class ReviewList extends StatelessWidget {
       
             case Status.success:
               return ListView.builder(
+                padding: EdgeInsets.zero,
                 itemCount: reviews.length,
-                itemBuilder: (context, index) => Text(reviews[index].comment),
+                itemBuilder: (context, index) {
+                  final review = reviews[index];
+                  return ReviewCard(review: review);
+                },
               );
             default:
               return SizedBox.shrink();
