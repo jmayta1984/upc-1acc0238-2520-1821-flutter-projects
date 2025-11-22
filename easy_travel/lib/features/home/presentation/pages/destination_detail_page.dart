@@ -14,6 +14,40 @@ class DestinationDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed:(){
+          showDialog(context: context, builder:(context) => Dialog(child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  spacing: 8,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    Text('Leave a comment', style: TextStyle(fontWeight: FontWeight.bold),),
+                    TextField(decoration: InputDecoration(
+                      hint: Text('Review'),
+                      border: OutlineInputBorder(),
+                      
+                    ),),
+                    
+                    FilledButton(
+                      onPressed: (){
+                        Navigator.of(context).pop();
+                      }, 
+                      child: Text('Submit'),    
+                    )
+                  ],
+                ),
+              )),
+            ),
+          ),));
+
+        }),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
