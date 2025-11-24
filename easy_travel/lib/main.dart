@@ -1,7 +1,9 @@
 import 'package:easy_travel/features/auth/data/auth_service.dart';
+import 'package:easy_travel/features/auth/presentation/blocs/auth_bloc.dart';
+import 'package:easy_travel/features/auth/presentation/blocs/auth_event.dart';
 import 'package:easy_travel/features/auth/presentation/blocs/login_bloc.dart';
-import 'package:easy_travel/features/auth/presentation/pages/login_page.dart';
 import 'package:easy_travel/core/ui/theme.dart';
+import 'package:easy_travel/features/auth/presentation/pages/splash_page.dart';
 import 'package:easy_travel/features/favorites/blocs/favorites_bloc.dart';
 import 'package:easy_travel/features/favorites/blocs/favorites_event.dart';
 import 'package:easy_travel/features/home/data/destination_dao.dart';
@@ -29,22 +31,29 @@ class MainApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => HomeBloc(
-            repository: DestinationRepositoryImpl(dao: DestinationDao(), service: DestinationService()),
+            repository: DestinationRepositoryImpl(
+              dao: DestinationDao(),
+              service: DestinationService(),
+            ),
           )..add(GetDestinationsByCategory(category: CategoryType.all.label)),
         ),
         BlocProvider(create: (context) => LoginBloc(service: AuthService())),
         BlocProvider(
           create: (context) =>
-              FavoritesBloc(dao: DestinationDao())..add(GetAllFavorites()),
+              FavoritesBloc(dao: DestinationDao())
+                ..add(const GetAllFavorites()),
         ),
 
-        BlocProvider(create: (context) => ReviewListBloc(service: ReviewService()))
+        BlocProvider(
+          create: (context) => ReviewListBloc(service: ReviewService()),
+        ),
+        BlocProvider(create: (context) => AuthBloc()..add(const AppStarted())),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: theme.light(),
         darkTheme: theme.dark(),
-        home: Scaffold(body: LoginPage()),
+        home: const SplashPage(),
       ),
     );
   }
