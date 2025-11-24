@@ -19,7 +19,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     ToggleFavorite event,
     Emitter<HomeState> emit,
   ) async {
-    repository.toggleFavorite(event.destination);
+    await repository.toggleFavorite(event.destination);
 
     final favoriteIds = await repository.getFavoriteIds();
 
