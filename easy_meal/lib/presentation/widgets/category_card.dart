@@ -9,11 +9,14 @@ class CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.network(
-          category.posterPath,
-          height: 120,
-          width: double.infinity,
-          fit: BoxFit.contain,
+        Hero(
+          tag: category.id,
+          child: Image.network(
+            category.posterPath,
+            height: 120,
+            width: double.infinity,
+            fit: BoxFit.contain,
+          ),
         ),
         Text(category.name),
       ],
